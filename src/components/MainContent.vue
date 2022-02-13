@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    
+    <h3>{{ internalMsg }}</h3>
   </div>
 </template>
 
@@ -9,13 +9,10 @@
 import { Options, Vue } from "vue-class-component";
 
 @Options({
-  name: "Home",
-  props: {
-    msg: String,
-  },
+  props: { msg!: String }
 })
 export default class MainContent extends Vue {
-  msg!: string;
+  internalMsg = "test str";
 }
 </script>
 

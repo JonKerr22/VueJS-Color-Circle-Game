@@ -1,17 +1,17 @@
 <template lang="html">
 
   <section class="circle">
-    <h1>circle Component</h1>
+    <h2>circle Component</h2>
   </section>
 
 </template>
 
 <script lang="ts">
 
-  import {Component, Vue} from "vue-property-decorator";
+  import { Options, Vue } from "vue-class-component";
 
-  @Component({
-    components: []
+  @Options({
+    name: "Circle"
   })
   export default class Circle extends Vue {
     public readonly color: string = "#000000";
