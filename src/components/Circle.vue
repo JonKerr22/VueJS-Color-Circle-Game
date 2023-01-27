@@ -1,8 +1,9 @@
 <template lang="html">
 
-  <section class="circle">
-    <h2>circle Component</h2>
-  </section>
+     <svg height="100" width="100">
+      <circle cx="50" cy="50" r="40" :fill="fillColor" />
+    </svg> 
+  
 
 </template>
 
@@ -14,15 +15,20 @@
     name: "Circle"
   })
   export default class Circle extends Vue {
-    public readonly color: string = "#000000";
-    public readonly index: number = 0;
+    public get fillColor(): string {
+      return this.generateRandomRBG();
+    }
 
+    private generateRandomRBG(): string {
+      let color = Math.floor(Math.random() * 16777216).toString(16);
+      let colorCode = '#000000'.slice(0, -color.length) + color;
+      return colorCode;
+    }
   }
 
 </script>
 
 <style scoped lang="scss">
   .circle {
-
   }
 </style>

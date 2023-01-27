@@ -1,8 +1,21 @@
 <template lang="html">
 
   <section class="gameboard">
-    <h1>gameboard Component</h1>
-    <Circle />
+    <div id="row1">
+      <Circle />
+      <Circle />
+      <Circle />
+    </div>
+    <div id="row2">
+      <Circle />
+      <Circle />
+      <Circle />
+    </div>
+    <div :id="rowThreeId">
+      <Circle />
+      <Circle />
+      <Circle />
+    </div>
   </section>
 
 </template>
@@ -18,7 +31,9 @@
   })
   export default class Gameboard extends Vue {
     // public readonly circles: Circle[];
-
+    public get rowThreeId(): string {
+      return "row3";
+    }
   }
 
 </script>
