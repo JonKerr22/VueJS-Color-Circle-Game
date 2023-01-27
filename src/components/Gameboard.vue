@@ -5,7 +5,10 @@
     <div v-for="n in 3" :key="n" :id="rowStr(n)" >
       <Circle v-for="i in 3" :key="i" :fillColor="circleColor(n, i)" @click="onCircleClick(n, i)"/>
     </div>
-    <CountdownTimer :initialTime="6" />
+    <div class="countdown-timer">
+      <h1>{{timerStr}} seconds left</h1>
+    </div>
+    <!--TODO - have a reset button optinally display when lose condition - timer is 0 or a wrong click -->
   </section>
 
 </template>
@@ -14,15 +17,18 @@
 
   import { Options, Vue } from "vue-class-component";
   import Circle from "./Circle.vue";
-  import CountdownTimer from "./CountdownTimer.vue";
 
   @Options({
     name: "Gameboard",
-    components: { Circle, CountdownTimer }
+    components: { Circle }
   })
   export default class Gameboard extends Vue {
+    private initialTime = 5.0;
+    private timerTimeout;
+
     public circleColors: string[] = this.newCircleColors();
     public offsetIdx: number = this.newOffsetIdx();
+    public timerCount = this.initialTime;
 
     public hardMode = false; //TODO - add button to toggle this
     public winCount = 0;
@@ -35,6 +41,20 @@
     }
     private get color2Offset(): number {
       return this.hardMode ? 70 : 80;
+    }
+    public get timerStr(): string {
+      if (this.timerCount > 0) {
+        this.timerTimeout = setTimeout(() => {
+          this.timerCount = this.timerCount - 0.01;
+        }, 10);
+      }
+      if(this.timerCount <= 0) {
+        //TODO - trigger lose process
+        return "0";
+      } else {
+        return `${this.timerCount.toFixed(2)}`;
+      }
+      
     }
 
     public rowStr(n: number): string {
@@ -57,6 +77,10 @@
     private isOffsetIdx(row: number, col: number): boolean {
       return 3*(row-1) + col === this.offsetIdx;
     }
+    private resetTimer(): void {
+      clearTimeout(this.timerTimeout);
+      this.timerCount = this.initialTime;
+    }
 
     public onCircleClick(row: number, col: number): void {
       if (this.isOffsetIdx(row, col)) {
@@ -64,10 +88,11 @@
         console.log(`Correct!, was ${this.offsetIdx}, you clicked ${3*(row-1) + col}`);
       }
       else {
+        //TODO - trigger lose condition
         this.winCount = 0;
         console.log(`wrong, was ${this.offsetIdx}, you clicked ${3*(row-1) + col}`);
       }
-
+      this.resetTimer();
       this.offsetIdx = this.newOffsetIdx();
       this.circleColors = this.newCircleColors();
     }
