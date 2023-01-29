@@ -6,9 +6,10 @@
       <Circle v-for="i in 3" :key="i" :fillColor="circleColor(n, i)" @click="onCircleClick(n, i)"/>
     </div>
     <div class="countdown-timer">
-      <h1>{{timerStr}} seconds left</h1>
+      <h2>{{timerStr}} seconds left</h2>
+      <h1 v-if="this.gameLostState">Game over!</h1>
+      <button v-if="this.gameLostState" @click="resetGame()">Reset</button> 
     </div>
-    <!--TODO - have a reset button optinally display when lose condition - timer is 0 or a wrong click -->
   </section>
 
 </template>
@@ -24,7 +25,8 @@
   })
   export default class Gameboard extends Vue {
     private initialTime = 5.0;
-    private timerTimeout;
+    private timerTimeout!: number;
+    private gameLostState = false;
 
     public circleColors: string[] = this.newCircleColors();
     public offsetIdx: number = this.newOffsetIdx();
@@ -43,13 +45,13 @@
       return this.hardMode ? 70 : 80;
     }
     public get timerStr(): string {
-      if (this.timerCount > 0) {
+      if (this.timerCount > 0 && !this.gameLostState) {
         this.timerTimeout = setTimeout(() => {
           this.timerCount = this.timerCount - 0.01;
         }, 10);
       }
       if(this.timerCount <= 0) {
-        //TODO - trigger lose process
+        this.gameLostState = true;
         return "0";
       } else {
         return `${this.timerCount.toFixed(2)}`;
@@ -80,21 +82,28 @@
     private resetTimer(): void {
       clearTimeout(this.timerTimeout);
       this.timerCount = this.initialTime;
+      this.gameLostState = false;
     }
-
-    public onCircleClick(row: number, col: number): void {
-      if (this.isOffsetIdx(row, col)) {
-        this.winCount++;
-        console.log(`Correct!, was ${this.offsetIdx}, you clicked ${3*(row-1) + col}`);
-      }
-      else {
-        //TODO - trigger lose condition
-        this.winCount = 0;
-        console.log(`wrong, was ${this.offsetIdx}, you clicked ${3*(row-1) + col}`);
-      }
+    private resetGame(): void {
       this.resetTimer();
       this.offsetIdx = this.newOffsetIdx();
       this.circleColors = this.newCircleColors();
+      this.winCount = 0;
+      this.gameLostState = false;
+    }
+
+    public onCircleClick(row: number, col: number): void {
+      if(!this.gameLostState) {
+        if (this.isOffsetIdx(row, col)) {
+          this.winCount++;
+          this.resetTimer();
+          this.offsetIdx = this.newOffsetIdx();
+          this.circleColors = this.newCircleColors();
+        }
+        else {
+          this.gameLostState = true;
+        }
+      }
     }
   }
 
