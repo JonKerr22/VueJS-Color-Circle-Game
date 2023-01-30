@@ -1,13 +1,15 @@
 <template lang="html">
 
   <section class="gameboard">
+    <input type="checkbox" id="hardmode" name="hardmode" @change="toggleHardMode()">
+    <label for="hardmode"> Hard mode?</label><br>
     <h2>Wins: {{winCount}} </h2>
     <div v-for="n in 3" :key="n" :id="rowStr(n)" >
       <Circle v-for="i in 3" :key="i" :fillColor="circleColor(n, i)" @click="onCircleClick(n, i)"/>
     </div>
     <div class="countdown-timer">
       <h2>{{timerStr}} seconds left</h2>
-      <h1 v-if="this.gameLostState">Game over!</h1>
+      <h1 v-if="this.gameLostState">{{ gameOverMessage }}</h1>
       <button v-if="this.gameLostState" @click="resetGame()">Reset</button> 
     </div>
   </section>
@@ -20,10 +22,11 @@
   import Circle from "./Circle.vue";
 
   @Options({
-    name: "Gameboard",
+    name: "CirlceColorGameboard",
     components: { Circle }
   })
   export default class Gameboard extends Vue {
+    public winCount = 0.0;
     private initialTime = 5.0;
     private timerTimeout!: number;
     private gameLostState = false;
@@ -33,7 +36,6 @@
     public timerCount = this.initialTime;
 
     public hardMode = false; //TODO - add button to toggle this
-    public winCount = 0;
 
     public get color1(): string {
       return this.circleColors[0];
@@ -43,6 +45,12 @@
     }
     private get color2Offset(): number {
       return this.hardMode ? 70 : 80;
+    }
+    private get timerScale(): number {
+      return this.hardMode ? 6: 7;
+    }
+    public get gameOverMessage(): string {
+      return this.hardMode ? "Game over, good try!" : "Game over!";
     }
     public get timerStr(): string {
       if (this.timerCount > 0 && !this.gameLostState) {
@@ -81,14 +89,14 @@
     }
     private resetTimer(): void {
       clearTimeout(this.timerTimeout);
-      this.timerCount = this.initialTime;
+      this.timerCount =  Math.max(this.initialTime - (Math.floor(this.winCount/this.timerScale) * 0.5), 0.75);
       this.gameLostState = false;
     }
     private resetGame(): void {
+      this.winCount = 0;
       this.resetTimer();
       this.offsetIdx = this.newOffsetIdx();
       this.circleColors = this.newCircleColors();
-      this.winCount = 0;
       this.gameLostState = false;
     }
 
@@ -104,6 +112,10 @@
           this.gameLostState = true;
         }
       }
+    }
+    public toggleHardMode(): void {
+      this.hardMode = !this.hardMode;
+      this.resetGame();
     }
   }
 

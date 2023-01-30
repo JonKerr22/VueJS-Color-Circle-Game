@@ -2,7 +2,7 @@
 
   <section class="circle-game">
     <h1>{{header}}</h1>
-    <Gameboard />
+    <CirlceColorGameboard />
   </section>
 
 </template>
@@ -10,15 +10,15 @@
 <script lang="ts">
 
   import {Options, Vue} from "vue-class-component";
-  import Gameboard from "@/components/Gameboard.vue";
+  import CirlceColorGameboard from "../components/ColorCirleGameboard.vue";
   @Options({
     components: { 
-      Gameboard
+      CirlceColorGameboard
     }
   })
   export default class CircleGame extends Vue {
     public get header(): string {
-      return "Click the cirle thats the wrong color before the timer runs out! (timer is a work in progress at this time)";
+      return "Click the cirle thats the wrong color before the timer runs out!";
     }
 
   }
