@@ -3,6 +3,7 @@
   <section class="gameboard">
     <input type="checkbox" id="hardmode" name="hardmode" @change="toggleHardMode()">
     <label for="hardmode"> Hard mode?</label><br>
+    <button v-if="!this.gameStarted" @click="startGame()">Start!</button> 
     <h2>Wins: {{winCount}} </h2>
     <div v-for="n in 3" :key="n" :id="rowStr(n)" >
       <Circle v-for="i in 3" :key="i" :fillColor="circleColor(n, i)" @click="onCircleClick(n, i)"/>
@@ -35,13 +36,17 @@
     public offsetIdx: number = this.newOffsetIdx();
     public timerCount = this.initialTime;
 
-    public hardMode = false; //TODO - add button to toggle this
+    public hardMode = false;
+    public gameStarted = false;
 
     public get color1(): string {
       return this.circleColors[0];
     }
     public get color2(): string {
       return this.circleColors[1];
+    }
+    public get gameRunning(): boolean {
+      return this.gameStarted && !this.gameLostState;
     }
     private get color2Offset(): number {
       return this.hardMode ? 70 : 80;
@@ -53,7 +58,7 @@
       return this.hardMode ? "Game over, good try!" : "Game over!";
     }
     public get timerStr(): string {
-      if (this.timerCount > 0 && !this.gameLostState) {
+      if (this.timerCount > 0 && this.gameRunning) {
         this.timerTimeout = setTimeout(() => {
           this.timerCount = this.timerCount - 0.01;
         }, 10);
@@ -92,6 +97,10 @@
       this.timerCount =  Math.max(this.initialTime - (Math.floor(this.winCount/this.timerScale) * 0.5), 0.75);
       this.gameLostState = false;
     }
+    private startGame(): void {
+      this.gameStarted = true;
+      this.resetGame();
+    }
     private resetGame(): void {
       this.winCount = 0;
       this.resetTimer();
@@ -101,7 +110,7 @@
     }
 
     public onCircleClick(row: number, col: number): void {
-      if(!this.gameLostState) {
+      if(this.gameRunning) {
         if (this.isOffsetIdx(row, col)) {
           this.winCount++;
           this.resetTimer();
@@ -115,7 +124,7 @@
     }
     public toggleHardMode(): void {
       this.hardMode = !this.hardMode;
-      this.resetGame();
+      this.gameStarted = false;
     }
   }
 
