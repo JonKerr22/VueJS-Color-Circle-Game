@@ -1,10 +1,12 @@
 <template>
   <div id="nav">
     <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
     <router-link to="/circle-game">Circle Game</router-link>
   </div>
   <router-view />
+  <div id="footer">
+    <h5>Created by Jon Kerr, using Vue.js</h5>
+  </div>
 </template>
 
 <style>
@@ -27,5 +29,12 @@
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  bottom: 10px;
+  width: 99%;
 }
 </style>
