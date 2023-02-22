@@ -3,8 +3,8 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/circle-game">Circle Game</router-link>
   </div>
-  <router-view />
-  <div id="footer">
+  <router-view class="page-content" />
+  <div class="footer">
     <h5>Created by Jon Kerr, using Vue.js</h5>
   </div>
 </template>
@@ -31,10 +31,18 @@
   color: #42b983;
 }
 
-#footer {
-  position: absolute;
-  bottom: 0;
-  bottom: 10px;
-  width: 99%;
+.page-content {
+  min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -42px; 
 }
+.page-content:after {
+  content: "";
+  display: block;
+}
+.site-footer, .page-content:after {
+  /* .push must be the same height as footer */
+  height: 42px; 
+}
+
 </style>
